@@ -261,6 +261,12 @@
     margin:0;
   }
 
+  .pills{
+    display:flex;
+    gap:8px;
+  }
+  .pills .test-pill{ flex:1; }
+
   .test-pill{
     display:flex;
     align-items:center;
@@ -290,6 +296,13 @@
     opacity:.6;
     cursor:default;
     pointer-events:none;
+  }
+  .test-pill.tasks.ready{
+    color:var(--c1-b);
+    background:rgba(168,138,237,0.15);
+  }
+  .test-pill.tasks.ready:hover{
+    box-shadow: 0 10px 20px -14px var(--c1-sh);
   }
 
   .test-pill.homework, .block-test-pill.homework, .subgroup-test-pill.homework{
@@ -366,10 +379,15 @@
 /* ============================================================
    ЯК ДОДАТИ НОВУ ТЕМУ — так само, як в 11-класному index.html:
    BLOCKS (розділ, тут "8 клас" / "9 клас") → subgroups (підрозділ) →
-   items (картка теми з уроком і, за бажання, тестом).
+   items (картка теми з уроком і, за бажання, тестом та завданнями).
+
+   У кожної теми є:
+     href  — урок
+     test  — "📝 Тест до теми"
+     tasks — "✏️ Завдання" (звичайні вправи; необов'язкове поле)
 
    Зараз усі теми стоять як "soon" (заглушки за програмою 8-9 класу).
-   Коли з'явиться готовий урок чи тест — заміни status на "ready" і
+   Коли з'явиться готовий урок, тест чи завдання — заміни status на "ready" і
    встав ПОВНЕ посилання (https://movoznavka.github.io/...).
    ============================================================ */
 
@@ -380,46 +398,61 @@ const BLOCKS = [
       { title: "Словосполучення і речення", items: [
         {icon: "С", status: "soon", title: "Словосполучення", desc: "Типи зв'язку слів",
           href: "urok8-slovospoluchennya.html",
-          test: {status: "soon", href: "slovospoluchennya8.html"}},
+          test: {status: "soon", href: "slovospoluchennya8.html"},
+          tasks: {status: "soon", href: "zavdannya8-slovospoluchennya.html"}},
         {icon: "П", status: "soon", title: "Просте речення", desc: "Двоскладні й односкладні",
           href: "urok8-proste-rechennya.html",
-          test: {status: "soon", href: "proste-rechennya8.html"}}
+          test: {status: "soon", href: "proste-rechennya8.html"},
+          tasks: {status: "soon", href: "zavdannya8-proste-rechennya.html"}}
       ]},
       { title: "Члени речення", items: [
         {icon: "Г", status: "soon", title: "Головні члени речення", href: "urok8-holovni-chleny.html",
-          test: {status: "soon", href: "holovni-chleny8.html"}},
+          test: {status: "soon", href: "holovni-chleny8.html"},
+          tasks: {status: "soon", href: "zavdannya8-holovni-chleny.html"}},
         {icon: "Т", status: "soon", title: "Тире між підметом і присудком", href: "urok8-tyre.html",
-          test: {status: "soon", href: "tyre8.html"}},
+          test: {status: "soon", href: "tyre8.html"},
+          tasks: {status: "soon", href: "zavdannya8-tyre.html"}},
         {icon: "Д", status: "soon", title: "Другорядні члени речення", href: "urok8-druhoryadni-chleny.html",
-          test: {status: "soon", href: "druhoryadni-chleny8.html"}}
+          test: {status: "soon", href: "druhoryadni-chleny8.html"},
+          tasks: {status: "soon", href: "zavdannya8-druhoryadni-chleny.html"}}
       ]},
       { title: "Односкладні речення", items: [
         {icon: "О", status: "soon", title: "Типи односкладних речень", href: "urok8-odnoskladni.html",
-          test: {status: "soon", href: "odnoskladni8.html"}}
+          test: {status: "soon", href: "odnoskladni8.html"},
+          tasks: {status: "soon", href: "zavdannya8-odnoskladni.html"}}
       ]},
       { title: "Однорідні члени речення", items: [
         {icon: "О", status: "soon", title: "Речення з однорідними членами", href: "urok8-odnoridni.html",
-          test: {status: "soon", href: "odnoridni8.html"}},
+          test: {status: "soon", href: "odnoridni8.html"},
+          tasks: {status: "soon", href: "zavdannya8-odnoridni.html"}},
         {icon: "О", status: "soon", title: "Однорідні й неоднорідні означення", href: "urok8-odnoridni-neodnoridni.html",
-          test: {status: "soon", href: "odnoridni-neodnoridni8.html"}}
+          test: {status: "soon", href: "odnoridni-neodnoridni8.html"},
+          tasks: {status: "soon", href: "zavdannya8-odnoridni-neodnoridni.html"}}
       ]},
       { title: "Звертання і вставні конструкції", items: [
         {icon: "З", status: "soon", title: "Речення зі звертаннями", href: "urok8-zvertannya.html",
-          test: {status: "soon", href: "zvertannya8.html"}},
+          test: {status: "soon", href: "zvertannya8.html"},
+          tasks: {status: "soon", href: "zavdannya8-zvertannya.html"}},
         {icon: "В", status: "soon", title: "Вставні слова, словосполучення й речення", href: "urok8-vstavni.html",
-          test: {status: "soon", href: "vstavni8.html"}}
+          test: {status: "soon", href: "vstavni8.html"},
+          tasks: {status: "soon", href: "zavdannya8-vstavni.html"}}
       ]},
       { title: "Відокремлені другорядні члени речення", items: [
         {icon: "В", status: "soon", title: "Відокремлені означення", href: "urok8-vidokremleni-oznachennya.html",
-          test: {status: "soon", href: "vidokremleni-oznachennya8.html"}},
+          test: {status: "soon", href: "vidokremleni-oznachennya8.html"},
+          tasks: {status: "soon", href: "zavdannya8-vidokremleni-oznachennya.html"}},
         {icon: "В", status: "soon", title: "Відокремлена прикладка", href: "urok8-vidokremlena-prykladka.html",
-          test: {status: "soon", href: "vidokremlena-prykladka8.html"}},
+          test: {status: "soon", href: "vidokremlena-prykladka8.html"},
+          tasks: {status: "soon", href: "zavdannya8-vidokremlena-prykladka.html"}},
         {icon: "В", status: "soon", title: "Відокремлена обставина", href: "urok8-vidokremlena-obstavyna.html",
-          test: {status: "soon", href: "vidokremlena-obstavyna8.html"}},
+          test: {status: "soon", href: "vidokremlena-obstavyna8.html"},
+          tasks: {status: "soon", href: "zavdannya8-vidokremlena-obstavyna.html"}},
         {icon: "В", status: "soon", title: "Відокремлений додаток", href: "urok8-vidokremlenyi-dodatok.html",
-          test: {status: "soon", href: "vidokremlenyi-dodatok8.html"}},
+          test: {status: "soon", href: "vidokremlenyi-dodatok8.html"},
+          tasks: {status: "soon", href: "zavdannya8-vidokremlenyi-dodatok.html"}},
         {icon: "У", status: "soon", title: "Уточнювальні члени речення", href: "urok8-utochnyuvalni.html",
-          test: {status: "soon", href: "utochnyuvalni8.html"}}
+          test: {status: "soon", href: "utochnyuvalni8.html"},
+          tasks: {status: "soon", href: "zavdannya8-utochnyuvalni.html"}}
       ]}
     ]
   },
@@ -429,33 +462,42 @@ const BLOCKS = [
     subgroups: [
       { title: "Складносурядне речення", items: [
         {icon: "С", status: "soon", title: "Складносурядне речення", href: "urok9-skladnosuryadne.html",
-          test: {status: "soon", href: "skladnosuryadne9.html"}}
+          test: {status: "soon", href: "skladnosuryadne9.html"},
+          tasks: {status: "soon", href: "zavdannya9-skladnosuryadne.html"}}
       ]},
       { title: "Складнопідрядне речення", items: [
         {icon: "П", status: "soon", title: "Складнопідрядне речення: будова, види", href: "urok9-skladnopidryadne.html",
-          test: {status: "soon", href: "skladnopidryadne9.html"}},
+          test: {status: "soon", href: "skladnopidryadne9.html"},
+          tasks: {status: "soon", href: "zavdannya9-skladnopidryadne.html"}},
         {icon: "П", status: "soon", title: "Складнопідрядні з кількома підрядними", href: "urok9-skladnopidryadne-kilka.html",
-          test: {status: "soon", href: "skladnopidryadne-kilka9.html"}}
+          test: {status: "soon", href: "skladnopidryadne-kilka9.html"},
+          tasks: {status: "soon", href: "zavdannya9-skladnopidryadne-kilka.html"}}
       ]},
       { title: "Безсполучникове складне речення", items: [
         {icon: "Б", status: "soon", title: "Безсполучникове складне речення", href: "urok9-bezspoluchnykove.html",
-          test: {status: "soon", href: "bezspoluchnykove9.html"}}
+          test: {status: "soon", href: "bezspoluchnykove9.html"},
+          tasks: {status: "soon", href: "zavdannya9-bezspoluchnykove.html"}}
       ]},
       { title: "Складне речення з різними видами зв'язку", items: [
         {icon: "С", status: "soon", title: "Складне речення з різними видами зв'язку", href: "urok9-rizni-zvyazky.html",
-          test: {status: "soon", href: "rizni-zvyazky9.html"}}
+          test: {status: "soon", href: "rizni-zvyazky9.html"},
+          tasks: {status: "soon", href: "zavdannya9-rizni-zvyazky.html"}}
       ]},
       { title: "Пряма мова", items: [
         {icon: "П", status: "soon", title: "Пряма мова. Діалог", href: "urok9-pryama-mova.html",
-          test: {status: "soon", href: "pryama-mova9.html"}},
+          test: {status: "soon", href: "pryama-mova9.html"},
+          tasks: {status: "soon", href: "zavdannya9-pryama-mova.html"}},
         {icon: "Н", status: "soon", title: "Заміна прямої мови непрямою", href: "urok9-nepryama-mova.html",
-          test: {status: "soon", href: "nepryama-mova9.html"}}
+          test: {status: "soon", href: "nepryama-mova9.html"},
+          tasks: {status: "soon", href: "zavdannya9-nepryama-mova.html"}}
       ]},
       { title: "Текст і стилістика", items: [
         {icon: "Т", status: "soon", title: "Стилі мовлення", href: "urok9-styli.html",
-          test: {status: "soon", href: "styli9.html"}},
+          test: {status: "soon", href: "styli9.html"},
+          tasks: {status: "soon", href: "zavdannya9-styli.html"}},
         {icon: "Т", status: "soon", title: "Будова тексту, засоби зв'язку речень", href: "urok9-teksty.html",
-          test: {status: "soon", href: "teksty9.html"}}
+          test: {status: "soon", href: "teksty9.html"},
+          tasks: {status: "soon", href: "zavdannya9-teksty.html"}}
       ]}
     ]
   }
@@ -468,6 +510,13 @@ function pillHtml(test){
   const clickable = test.status === 'ready';
   const label = "📝 Тест до теми";
   return `<a class="test-pill ${test.status}" href="${clickable ? test.href : '#'}" data-testkey="${test.href}">${label}</a>`;
+}
+
+function tasksPillHtml(tasks){
+  if(!tasks) return '';
+  const clickable = tasks.status === 'ready';
+  const label = "✏️ Завдання";
+  return `<a class="test-pill tasks ${tasks.status}" href="${clickable ? tasks.href : '#'}" data-testkey="${tasks.href}">${label}</a>`;
 }
 
 function generalTestPillHtml(test){
@@ -509,7 +558,7 @@ function renderBlocks_(){
                   <p class="card-title">${it.title}</p>
                   ${it.desc?`<p class="card-sub">${it.desc}</p>`:''}
                 </a>
-                ${pillHtml(it.test)}
+                <div class="pills">${pillHtml(it.test)}${tasksPillHtml(it.tasks)}</div>
               </div>`).join('')}
           </div>
         </div>
@@ -598,10 +647,11 @@ function applyAccessAndRender_(studentCode, allowed, displayName){
     if (card.getAttribute('href') !== '#') {
       card.setAttribute('href', appendStudentParam_(card.getAttribute('href'), displayName));
     }
-    const pill = wrap.querySelector('.test-pill');
-    if (pill && pill.getAttribute('href') !== '#') {
-      pill.setAttribute('href', appendStudentParam_(pill.getAttribute('href'), displayName));
-    }
+    wrap.querySelectorAll('.test-pill').forEach(function(pill){
+      if (pill.getAttribute('href') !== '#') {
+        pill.setAttribute('href', appendStudentParam_(pill.getAttribute('href'), displayName));
+      }
+    });
   });
   document.querySelectorAll('.subgroup').forEach(function(sg){
     if (!sg.querySelector('.card')) sg.remove();
