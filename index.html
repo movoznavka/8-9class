@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Уроки й тести · 8-9 клас</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3DFFB;
+    --bg-soft:#F7EAFD;
+    --card:#FFFFFF;
+    --ink:#2B1B3D;
+    --ink-soft:#8A6FA0;
+    --line: rgba(43,27,61,0.08);
+
+    --c1-a:#C77DFF; --c1-b:#9333EA; --c1-sh: rgba(147,51,234,0.45);
+    --c3-a:#5FE0A8; --c3-b:#17A863; --c3-sh: rgba(23,168,99,0.4);
+    --c2-b:#F0459A;
+
+    --correct-bg:#E6F8EE;
+    --correct-ink:#128A54;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+    padding:28px 16px 64px;
+  }
+  .wrap{max-width:960px;margin:0 auto;}
+
+  .topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding-bottom:16px;
+    margin-bottom:22px;
+    border-bottom:1.5px solid rgba(19,33,59,0.14);
+  }
+  .kicker{
+    font-family:'Manrope',sans-serif;
+    font-weight:800;
+    font-size:12.5px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--ink);
+    opacity:.55;
+  }
+  .kicker.tag{opacity:.4;}
+
+  h1{
+    font-family:'Manrope',sans-serif;
+    font-weight:800;
+    font-size:clamp(26px,6vw,38px);
+    line-height:1.05;
+    letter-spacing:-0.01em;
+    margin:0 0 8px;
+    text-transform:uppercase;
+  }
+  h1 .hl{color:var(--c1-b);}
+  .sub{color:var(--ink-soft);font-size:15px;max-width:60ch;margin:0 0 30px;font-weight:500;}
+
+  .block{
+    margin-bottom:46px;
+  }
+  .block-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    flex-wrap:wrap;
+    margin:0 0 4px;
+    padding-bottom:12px;
+    border-bottom:2px solid rgba(19,33,59,0.14);
+  }
+  .block-title{
+    font-family:'Manrope',sans-serif;
+    font-weight:800;
+    font-size:24px;
+    letter-spacing:-0.01em;
+    margin:0;
+  }
+  .block-test-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    text-decoration:none;
+    font-family:'Manrope',sans-serif;
+    font-weight:800;
+    font-size:12.5px;
+    letter-spacing:.01em;
+    padding:9px 16px;
+    border-radius:999px;
+    white-space:nowrap;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .block-test-pill.ready{
+    color:var(--c3-b);
+    background:var(--correct-bg);
+    cursor:pointer;
+  }
+  .block-test-pill.ready:hover{
+    transform:translateY(-2px);
+    box-shadow: 0 10px 20px -14px var(--c3-sh);
+  }
+  .block-test-pill.soon{
+    color:var(--ink-soft);
+    background:var(--bg-soft);
+    opacity:.7;
+    cursor:default;
+    pointer-events:none;
+  }
+
+  .subgroup{ margin-bottom:26px; margin-top:24px; }
+  .subgroup:first-of-type{ margin-top:22px; }
+  .subgroup-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+    margin:0 0 14px 2px;
+  }
+  .subgroup-title{
+    font-family:'Manrope',sans-serif;
+    font-weight:800;
+    font-size:14px;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:var(--c1-b);
+    margin:0;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:5px 14px 5px 12px;
+    border-radius:999px;
+    background: rgba(51,85,238,0.10);
+  }
+  .subgroup-title::before{
+    content:'';
+    width:6px;height:6px;
+    border-radius:50%;
+    background:var(--c1-b);
+  }
+  .subgroup-test-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    text-decoration:none;
+    font-family:'Manrope',sans-serif;
+    font-weight:800;
+    font-size:11.5px;
+    letter-spacing:.01em;
+    padding:7px 13px;
+    border-radius:999px;
+    white-space:nowrap;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .subgroup-test-pill.ready{
+    color:var(--c3-b);
+    background:var(--correct-bg);
+    cursor:pointer;
+  }
+  .subgroup-test-pill.ready:hover{
+    transform:translateY(-2px);
+    box-shadow: 0 10px 20px -14px var(--c3-sh);
+  }
+  .subgroup-test-pill.soon{
+    color:var(--ink-soft);
+    background:var(--bg-soft);
+    opacity:.7;
+    cursor:default;
+    pointer-events:none;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(250px, 1fr));
+    gap:14px;
+  }
+
+  .card-wrap{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+
+  .card{
+    background:var(--card);
+    border-radius:22px;
+    padding:22px 22px 20px;
+    box-shadow: 0 14px 30px -24px rgba(19,33,59,0.35);
+    text-decoration:none;
+    color:var(--ink);
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    position:relative;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .card.ready:hover{
+    transform:translateY(-3px);
+    box-shadow: 0 18px 34px -18px rgba(19,33,59,0.4);
+  }
+  .card.soon{
+    opacity:.5;
+    cursor:default;
+    pointer-events:none;
+  }
+
+  .card-top{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:8px;
+  }
+
+  .tile{
+    width:40px;height:40px;min-width:40px;
+    border-radius:12px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Manrope',sans-serif;
+    font-weight:800;
+    font-size:15px;
+    color:var(--c1-b);
+    background: linear-gradient(150deg, rgba(255,255,255,0.75), rgba(108,140,255,0.22));
+    backdrop-filter: blur(6px) saturate(160%);
+    -webkit-backdrop-filter: blur(6px) saturate(160%);
+    border:1px solid rgba(255,255,255,0.7);
+    box-shadow: 0 4px 12px -7px var(--c1-sh), inset 0 1px 1px rgba(255,255,255,0.8);
+  }
+
+  .status{
+    font-family:'Manrope',sans-serif;
+    font-weight:800;
+    font-size:10.5px;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    padding:5px 10px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+  .status.ready{background:var(--correct-bg);color:var(--correct-ink);}
+  .status.soon{background:var(--bg-soft);color:var(--ink-soft);}
+
+  .card-title{
+    font-family:'Manrope',sans-serif;
+    font-weight:700;
+    font-size:16.5px;
+    line-height:1.32;
+    margin:0;
+  }
+  .card-sub{
+    font-size:13px;
+    color:var(--ink-soft);
+    font-weight:500;
+    margin:0;
+  }
+
+  .test-pill{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    text-decoration:none;
+    font-family:'Manrope',sans-serif;
+    font-weight:800;
+    font-size:12px;
+    letter-spacing:.01em;
+    padding:9px 14px;
+    border-radius:14px;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .test-pill.ready{
+    color:var(--c3-b);
+    background:var(--correct-bg);
+    cursor:pointer;
+  }
+  .test-pill.ready:hover{
+    transform:translateY(-2px);
+    box-shadow: 0 10px 20px -14px var(--c3-sh);
+  }
+  .test-pill.soon{
+    color:var(--ink-soft);
+    background:var(--bg-soft);
+    opacity:.6;
+    cursor:default;
+    pointer-events:none;
+  }
+
+  .test-pill.homework, .block-test-pill.homework, .subgroup-test-pill.homework{
+    color:#7A3B00 !important;
+    background: linear-gradient(135deg, #FFE27A, #FF9A3D) !important;
+    animation: hwGlow 1.6s ease-in-out infinite;
+  }
+  @keyframes hwGlow{
+    0%,100%{ box-shadow: 0 0 6px 0 rgba(255,140,40,0.55); }
+    50%{ box-shadow: 0 0 18px 6px rgba(255,140,40,0.85); }
+  }
+  .hw-badge{
+    margin-left:6px;
+    font-weight:800;
+  }
+
+  footer{
+    text-align:center;
+    margin-top:36px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    font-weight:500;
+  }
+
+  .teacher-banner{
+    display:none;
+    background: var(--c2-b);
+    color:#fff;
+    font-family:'Manrope',sans-serif;
+    font-weight:800;
+    font-size:12.5px;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    text-align:center;
+    padding:9px 14px;
+    border-radius:12px;
+    margin-bottom:20px;
+  }
+  body.teacher-mode .teacher-banner{ display:block; }
+
+  .open-badge{
+    font-family:'Manrope',sans-serif;
+    font-weight:800;
+    font-size:10.5px;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    padding:5px 10px;
+    border-radius:999px;
+    align-self:flex-start;
+    margin-top:-2px;
+  }
+  .open-badge.open{ background:var(--correct-bg); color:var(--correct-ink); }
+  .open-badge.closed{ background:rgba(229,72,77,0.12); color:var(--c2-b); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="kicker">Навігація · 8-9 клас</div>
+    <div class="kicker tag">для вчителя</div>
+  </div>
+
+  <div class="teacher-banner">Режим вчителя — учні цього не бачать</div>
+
+  <h1>Усі <span class="hl">теми</span></h1>
+  <p class="sub" id="subDesc">Кожному учню — своє посилання з кодом (…/index89.html?u=Ім'я). Він бачить лише ті теми, які ви йому відкрили — і урок, і тест до нього. Собі додайте в кінець ?vchytel=1 — побачите все і хто що має відкритим.</p>
+
+  <div id="blocks"></div>
+
+  <footer>@movoznavka</footer>
+</div>
+
+<script>
+/* ============================================================
+   ЯК ДОДАТИ НОВУ ТЕМУ — так само, як в 11-класному index.html:
+   BLOCKS (розділ, тут "8 клас" / "9 клас") → subgroups (підрозділ) →
+   items (картка теми з уроком і, за бажання, тестом).
+
+   Зараз усі теми стоять як "soon" (заглушки за програмою 8-9 класу).
+   Коли з'явиться готовий урок чи тест — заміни status на "ready" і
+   встав ПОВНЕ посилання (https://movoznavka.github.io/...).
+   ============================================================ */
+
+const BLOCKS = [
+  {
+    name: "8 клас",
+    subgroups: [
+      { title: "Словосполучення і речення", items: [
+        {icon: "С", status: "soon", title: "Словосполучення", desc: "Типи зв'язку слів",
+          href: "urok8-slovospoluchennya.html",
+          test: {status: "soon", href: "slovospoluchennya8.html"}},
+        {icon: "П", status: "soon", title: "Просте речення", desc: "Двоскладні й односкладні",
+          href: "urok8-proste-rechennya.html",
+          test: {status: "soon", href: "proste-rechennya8.html"}}
+      ]},
+      { title: "Члени речення", items: [
+        {icon: "Г", status: "soon", title: "Головні члени речення", href: "urok8-holovni-chleny.html",
+          test: {status: "soon", href: "holovni-chleny8.html"}},
+        {icon: "Т", status: "soon", title: "Тире між підметом і присудком", href: "urok8-tyre.html",
+          test: {status: "soon", href: "tyre8.html"}},
+        {icon: "Д", status: "soon", title: "Другорядні члени речення", href: "urok8-druhoryadni-chleny.html",
+          test: {status: "soon", href: "druhoryadni-chleny8.html"}}
+      ]},
+      { title: "Односкладні речення", items: [
+        {icon: "О", status: "soon", title: "Типи односкладних речень", href: "urok8-odnoskladni.html",
+          test: {status: "soon", href: "odnoskladni8.html"}}
+      ]},
+      { title: "Однорідні члени речення", items: [
+        {icon: "О", status: "soon", title: "Речення з однорідними членами", href: "urok8-odnoridni.html",
+          test: {status: "soon", href: "odnoridni8.html"}},
+        {icon: "О", status: "soon", title: "Однорідні й неоднорідні означення", href: "urok8-odnoridni-neodnoridni.html",
+          test: {status: "soon", href: "odnoridni-neodnoridni8.html"}}
+      ]},
+      { title: "Звертання і вставні конструкції", items: [
+        {icon: "З", status: "soon", title: "Речення зі звертаннями", href: "urok8-zvertannya.html",
+          test: {status: "soon", href: "zvertannya8.html"}},
+        {icon: "В", status: "soon", title: "Вставні слова, словосполучення й речення", href: "urok8-vstavni.html",
+          test: {status: "soon", href: "vstavni8.html"}}
+      ]},
+      { title: "Відокремлені другорядні члени речення", items: [
+        {icon: "В", status: "soon", title: "Відокремлені означення", href: "urok8-vidokremleni-oznachennya.html",
+          test: {status: "soon", href: "vidokremleni-oznachennya8.html"}},
+        {icon: "В", status: "soon", title: "Відокремлена прикладка", href: "urok8-vidokremlena-prykladka.html",
+          test: {status: "soon", href: "vidokremlena-prykladka8.html"}},
+        {icon: "В", status: "soon", title: "Відокремлена обставина", href: "urok8-vidokremlena-obstavyna.html",
+          test: {status: "soon", href: "vidokremlena-obstavyna8.html"}},
+        {icon: "В", status: "soon", title: "Відокремлений додаток", href: "urok8-vidokremlenyi-dodatok.html",
+          test: {status: "soon", href: "vidokremlenyi-dodatok8.html"}},
+        {icon: "У", status: "soon", title: "Уточнювальні члени речення", href: "urok8-utochnyuvalni.html",
+          test: {status: "soon", href: "utochnyuvalni8.html"}}
+      ]}
+    ]
+  },
+  {
+    name: "9 клас",
+    generalTest: {status: "soon", href: "skladne-rechennya9-zagalnyi.html"},
+    subgroups: [
+      { title: "Складносурядне речення", items: [
+        {icon: "С", status: "soon", title: "Складносурядне речення", href: "urok9-skladnosuryadne.html",
+          test: {status: "soon", href: "skladnosuryadne9.html"}}
+      ]},
+      { title: "Складнопідрядне речення", items: [
+        {icon: "П", status: "soon", title: "Складнопідрядне речення: будова, види", href: "urok9-skladnopidryadne.html",
+          test: {status: "soon", href: "skladnopidryadne9.html"}},
+        {icon: "П", status: "soon", title: "Складнопідрядні з кількома підрядними", href: "urok9-skladnopidryadne-kilka.html",
+          test: {status: "soon", href: "skladnopidryadne-kilka9.html"}}
+      ]},
+      { title: "Безсполучникове складне речення", items: [
+        {icon: "Б", status: "soon", title: "Безсполучникове складне речення", href: "urok9-bezspoluchnykove.html",
+          test: {status: "soon", href: "bezspoluchnykove9.html"}}
+      ]},
+      { title: "Складне речення з різними видами зв'язку", items: [
+        {icon: "С", status: "soon", title: "Складне речення з різними видами зв'язку", href: "urok9-rizni-zvyazky.html",
+          test: {status: "soon", href: "rizni-zvyazky9.html"}}
+      ]},
+      { title: "Пряма мова", items: [
+        {icon: "П", status: "soon", title: "Пряма мова. Діалог", href: "urok9-pryama-mova.html",
+          test: {status: "soon", href: "pryama-mova9.html"}},
+        {icon: "Н", status: "soon", title: "Заміна прямої мови непрямою", href: "urok9-nepryama-mova.html",
+          test: {status: "soon", href: "nepryama-mova9.html"}}
+      ]},
+      { title: "Текст і стилістика", items: [
+        {icon: "Т", status: "soon", title: "Стилі мовлення", href: "urok9-styli.html",
+          test: {status: "soon", href: "styli9.html"}},
+        {icon: "Т", status: "soon", title: "Будова тексту, засоби зв'язку речень", href: "urok9-teksty.html",
+          test: {status: "soon", href: "teksty9.html"}}
+      ]}
+    ]
+  }
+];
+
+const blocksEl = document.getElementById('blocks');
+
+function pillHtml(test){
+  if(!test) return '';
+  const clickable = test.status === 'ready';
+  const label = "📝 Тест до теми";
+  return `<a class="test-pill ${test.status}" href="${clickable ? test.href : '#'}" data-testkey="${test.href}">${label}</a>`;
+}
+
+function generalTestPillHtml(test){
+  if(!test) return '';
+  const clickable = test.status === 'ready';
+  const label = "📝 Загальний тест";
+  return `<a class="block-test-pill ${test.status}" href="${clickable ? test.href : '#'}" data-testkey="${test.href}">${label}</a>`;
+}
+
+function subgroupTestPillHtml(test){
+  if(!test) return '';
+  const clickable = test.status === 'ready';
+  const label = "📝 Загальний тест";
+  return `<a class="subgroup-test-pill ${test.status}" href="${clickable ? test.href : '#'}" data-testkey="${test.href}">${label}</a>`;
+}
+
+function renderBlocks_(){
+  blocksEl.innerHTML = BLOCKS.map(block => `
+    <div class="block">
+      <div class="block-header">
+        <h2 class="block-title">${block.name}</h2>
+        ${generalTestPillHtml(block.generalTest)}
+      </div>
+      ${block.subgroups.map(sg => `
+        <div class="subgroup">
+          ${(sg.title || sg.generalTest) ? `
+            <div class="subgroup-header">
+              ${sg.title ? `<div class="subgroup-title">${sg.title}</div>` : '<span></span>'}
+              ${subgroupTestPillHtml(sg.generalTest)}
+            </div>` : ''}
+          <div class="grid">
+            ${sg.items.map(it => `
+              <div class="card-wrap">
+                <a class="card ${it.status}" href="${it.status==='soon'?'#':it.href}" data-key="${it.href}">
+                  <div class="card-top">
+                    <span class="tile">${it.icon}</span>
+                    <span class="status ${it.status}">${it.status==='soon'?'Скоро':'Готово'}</span>
+                  </div>
+                  <p class="card-title">${it.title}</p>
+                  ${it.desc?`<p class="card-sub">${it.desc}</p>`:''}
+                </a>
+                ${pillHtml(it.test)}
+              </div>`).join('')}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+renderBlocks_();
+
+// ============================================================
+// ДЗ — те саме, що й у 11-класному порталі. Встав сюди /exec-посилання
+// НОВОГО Apps Script проєкту, розгорнутого для бота @resultat89_bot
+// (той, що з Code89.gs) — НЕ те саме посилання, що для 11 класу,
+// інакше учні 8-9 класів побачать чужі позначки ДЗ.
+// ============================================================
+const HOMEWORK_API_URL = "ВСТАВТЕ_СЮДИ_/exec_ПОСИЛАННЯ_НОВОГО_APPS_SCRIPT";
+
+let _lastHomeworkMap = null;
+function applyHomework(map){
+  map = map || {};
+  _lastHomeworkMap = map;
+  document.querySelectorAll('[data-testkey]').forEach(function(el){
+    const hw = map[el.getAttribute('data-testkey')];
+    if(!hw) return;
+    el.classList.add('homework');
+    if(!el.querySelector('.hw-badge')){
+      const span = document.createElement('span');
+      span.className = 'hw-badge';
+      span.textContent = ' · ДЗ ' + hw.number;
+      el.appendChild(span);
+    }
+    if (hw.number && el.getAttribute('href') !== '#') {
+      const sep = el.getAttribute('href').indexOf('?') > -1 ? '&' : '?';
+      el.setAttribute('href', el.getAttribute('href') + sep + 'hw=' + encodeURIComponent(hw.number));
+    }
+  });
+}
+
+function loadHomework(studentCode){
+  if(!HOMEWORK_API_URL || HOMEWORK_API_URL.indexOf('ВСТАВТЕ') === 0) return;
+  if(!studentCode) return;
+  const sep = HOMEWORK_API_URL.indexOf('?') > -1 ? '&' : '?';
+  const s = document.createElement('script');
+  s.src = HOMEWORK_API_URL + sep + 'callback=applyHomework&student=' + encodeURIComponent(studentCode);
+  document.body.appendChild(s);
+}
+
+// ============================================================
+// ХТО ЩО БАЧИТЬ — заповни так само, як STUDENT_ACCESS в 11-класному
+// index.html: код учня → масив href уроків, які йому відкрито.
+// Посилання для учня: .../index89.html?u=Ім'я
+// ============================================================
+const STUDENT_ACCESS = {
+  // "код-учня": ["href-теми-1", "href-теми-2"]
+};
+
+// ============================================================
+// ГРУПОВІ КОДИ (одне посилання — двоє учнів), як і в 11 класі.
+// ============================================================
+const GROUP_MEMBERS = {
+  // "код групи в нижньому регістрі": ["Ім'я1", "Ім'я2"]
+};
+
+function normalizeCode(s){
+  return (s || '').trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+const NORMALIZED_ACCESS = {};
+Object.keys(STUDENT_ACCESS).forEach(function(code){
+  NORMALIZED_ACCESS[normalizeCode(code)] = STUDENT_ACCESS[code];
+});
+
+function appendStudentParam_(href, name){
+  const sep = href.indexOf('?') > -1 ? '&' : '?';
+  return href + sep + 'student=' + encodeURIComponent(name);
+}
+
+function applyAccessAndRender_(studentCode, allowed, displayName){
+  const desc = document.getElementById('subDesc');
+  if (desc) desc.remove();
+
+  document.querySelectorAll('.card-wrap').forEach(function(wrap){
+    const card = wrap.querySelector('.card');
+    const key = card.getAttribute('data-key');
+    if (allowed.indexOf(key) === -1) { wrap.remove(); return; }
+    if (card.getAttribute('href') !== '#') {
+      card.setAttribute('href', appendStudentParam_(card.getAttribute('href'), displayName));
+    }
+    const pill = wrap.querySelector('.test-pill');
+    if (pill && pill.getAttribute('href') !== '#') {
+      pill.setAttribute('href', appendStudentParam_(pill.getAttribute('href'), displayName));
+    }
+  });
+  document.querySelectorAll('.subgroup').forEach(function(sg){
+    if (!sg.querySelector('.card')) sg.remove();
+  });
+  document.querySelectorAll('.block').forEach(function(b){
+    if (!b.querySelector('.card')) b.remove();
+  });
+
+  document.querySelectorAll('#switchWho').forEach(function(el){ el.closest('p').remove(); });
+  if (GROUP_MEMBERS[studentCode]) {
+    const who = document.createElement('p');
+    who.className = 'sub';
+    who.style.cssText = 'margin-top:28px;font-size:13px;';
+    who.innerHTML = 'Ви зайшли як <b>' + displayName + '</b>. <a href="#" id="switchWho" style="color:var(--c1-b);">Це не я</a>';
+    document.querySelector('.wrap').appendChild(who);
+    document.getElementById('switchWho').addEventListener('click', function(e){
+      e.preventDefault();
+      sessionStorage.removeItem('chosenName_' + studentCode);
+      location.reload();
+    });
+  }
+}
+
+function finishStudentView_(studentCode, allowedStatic, displayName){
+  loadHomework(studentCode);
+  applyAccessAndRender_(studentCode, allowedStatic, displayName);
+
+  const stillWaiting = HOMEWORK_API_URL && HOMEWORK_API_URL.indexOf('ВСТАВТЕ') !== 0;
+  const blocksEl = document.getElementById('blocks');
+
+  let loadingEl = null;
+  if (stillWaiting && !document.querySelector('.card-wrap')) {
+    loadingEl = document.createElement('p');
+    loadingEl.className = 'sub';
+    loadingEl.id = 'accessLoading';
+    loadingEl.textContent = 'Завантажуємо ваші теми…';
+    document.querySelector('.wrap').insertBefore(loadingEl, blocksEl);
+  }
+
+  if (!stillWaiting) return;
+
+  let resolved = false;
+  window.applyAccess = function(dynamicList){
+    if (resolved) return;
+    resolved = true;
+    dynamicList = dynamicList || [];
+    const extra = dynamicList.filter(function(h){ return allowedStatic.indexOf(h) === -1; });
+    if (extra.length > 0) {
+      renderBlocks_();
+      applyAccessAndRender_(studentCode, allowedStatic.concat(extra), displayName);
+      if (_lastHomeworkMap) applyHomework(_lastHomeworkMap);
+    }
+
+    const loader = document.getElementById('accessLoading');
+    if (loader) loader.remove();
+
+    if (!document.querySelector('.card-wrap')) {
+      const msg = document.createElement('p');
+      msg.className = 'sub';
+      msg.textContent = 'Поки для вас не відкрито жодної теми. Зверніться до вчительки.';
+      document.querySelector('.wrap').insertBefore(msg, blocksEl);
+    }
+  };
+
+  const sep = HOMEWORK_API_URL.indexOf('?') > -1 ? '&' : '?';
+  const s = document.createElement('script');
+  s.src = HOMEWORK_API_URL + sep + 'mode=access&callback=applyAccess&student=' + encodeURIComponent(studentCode);
+  document.body.appendChild(s);
+}
+
+function showNamePicker_(studentCode, allowed, members){
+  const blocksEl = document.getElementById('blocks');
+  blocksEl.style.display = 'none';
+  const desc = document.getElementById('subDesc');
+  if (desc) desc.remove();
+
+  const box = document.createElement('div');
+  box.id = 'namePicker';
+  box.innerHTML = '<p class="sub" style="margin-bottom:18px;">Це спільне посилання. Оберіть, хто зараз проходить тести:</p>';
+
+  const row = document.createElement('div');
+  row.style.cssText = 'display:flex;gap:12px;flex-wrap:wrap;';
+
+  members.forEach(function(name){
+    const btn = document.createElement('button');
+    btn.textContent = name;
+    btn.style.cssText = 'font-family:Manrope,sans-serif;font-weight:800;font-size:16px;padding:18px 30px;border:none;border-radius:16px;cursor:pointer;background:var(--card);color:var(--ink);box-shadow:0 14px 30px -24px rgba(19,33,59,0.35);';
+    btn.addEventListener('click', function(){
+      sessionStorage.setItem('chosenName_' + studentCode, name);
+      box.remove();
+      blocksEl.style.display = '';
+      finishStudentView_(studentCode, allowed, name);
+    });
+    row.appendChild(btn);
+  });
+
+  box.appendChild(row);
+  document.querySelector('.wrap').insertBefore(box, blocksEl);
+}
+
+(function(){
+  const params = new URLSearchParams(location.search);
+  const isTeacher = params.get('vchytel') === '1';
+  const studentCode = normalizeCode(params.get('u'));
+  const allowed = studentCode ? NORMALIZED_ACCESS[studentCode] : null;
+
+  if (isTeacher) {
+    document.body.classList.add('teacher-mode');
+
+    function renderOpenBadges_(dynamicMap){
+      dynamicMap = dynamicMap || {};
+      document.querySelectorAll('.card').forEach(function(card){
+        const key = card.getAttribute('data-key');
+        const openFor = Object.keys(STUDENT_ACCESS).filter(function(code){
+          const staticOpen = STUDENT_ACCESS[code].indexOf(key) !== -1;
+          const dynOpen = (dynamicMap[normalizeCode(code)] || []).indexOf(key) !== -1;
+          return staticOpen || dynOpen;
+        });
+        let badge = card.querySelector('.open-badge');
+        if (!badge) {
+          badge = document.createElement('span');
+          card.appendChild(badge);
+        }
+        if (openFor.length) {
+          badge.className = 'open-badge open';
+          badge.textContent = '🔓 Відкрито · ' + openFor.length;
+          badge.title = openFor.join(', ');
+        } else {
+          badge.className = 'open-badge closed';
+          badge.textContent = '🔒 нікому не відкрито';
+          badge.title = '';
+        }
+      });
+    }
+
+    renderOpenBadges_({});
+
+    if (HOMEWORK_API_URL && HOMEWORK_API_URL.indexOf('ВСТАВТЕ') !== 0) {
+      window.applyAllAccess = renderOpenBadges_;
+      const sep = HOMEWORK_API_URL.indexOf('?') > -1 ? '&' : '?';
+      const s = document.createElement('script');
+      s.src = HOMEWORK_API_URL + sep + 'mode=access_all&callback=applyAllAccess';
+      document.body.appendChild(s);
+    }
+    return;
+  }
+
+  if (studentCode && allowed) {
+    const tag = document.querySelector('.kicker.tag');
+    if (tag) tag.remove();
+
+    const members = GROUP_MEMBERS[studentCode];
+    if (members) {
+      const chosen = sessionStorage.getItem('chosenName_' + studentCode);
+      if (chosen && members.indexOf(chosen) !== -1) {
+        finishStudentView_(studentCode, allowed, chosen);
+      } else {
+        showNamePicker_(studentCode, allowed, members);
+      }
+    } else {
+      finishStudentView_(studentCode, allowed, params.get('u').trim());
+    }
+  } else {
+    const desc = document.getElementById('subDesc');
+    if (desc) desc.remove();
+    document.querySelectorAll('.block').forEach(function(b){ b.remove(); });
+    const msg = document.createElement('p');
+    msg.className = 'sub';
+    msg.textContent = 'Це посилання недійсне. Зверніться до вчительки за новим.';
+    document.querySelector('.wrap').appendChild(msg);
+  }
+})();
+</script>
+</body>
+</html>
