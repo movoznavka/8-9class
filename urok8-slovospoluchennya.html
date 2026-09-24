@@ -298,7 +298,7 @@
     <div class="kicker tag" id="totalTag"></div>
   </div>
 
-  <h1>Слово до <span class="hl">слова</span></h1>
+  <h1>Слово<span class="hl">сполучення</span></h1>
 
   <div class="topictoggle" id="topictoggle"></div>
   <div class="tabbar" id="subtabbar"></div>
@@ -483,7 +483,7 @@ const TOPICS = {
 };
 
 const LETTERS = ["А","Б","В","Г","Д","Е","Є"];
-const TOPIC_ORDER = ["rule","exercises"];
+const TOPIC_ORDER = ["rule"]; // "exercises" вимкнено; додай його сюди, щоб повернути вкладку «Вправи»
 
 let activeTopic = "rule";
 let activeSub = 0;
@@ -510,6 +510,7 @@ function saveCurrentDrawing(){ if(window.getDrawingSnapshot) drawStore[sectionKe
 function restoreCurrentDrawing(){ if(window.setDrawingSnapshot) window.setDrawingSnapshot(drawStore[sectionKey()] || null); }
 
 function renderTopics(){
+  if(TOPIC_ORDER.length < 2){ topictoggle.style.display = "none"; topictoggle.innerHTML = ""; return; }
   topictoggle.innerHTML = TOPIC_ORDER.map(key => `
     <button class="${key===activeTopic?'active':''}" data-key="${key}">${TOPICS[key].label}</button>
   `).join('');
