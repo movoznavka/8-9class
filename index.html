@@ -808,6 +808,9 @@ function showNamePicker_(studentCode, allowed, members){
     return;
   }
 
+  // Учням службові підписи не потрібні: верхній рядок «Навігація · 8-9 клас» (заголовок «Усі теми» лишається)
+  document.querySelectorAll('.topbar, .teacher-banner').forEach(function(el){ el.remove(); });
+
   if (studentCode && allowed) {
     const tag = document.querySelector('.kicker.tag');
     if (tag) tag.remove();
