@@ -101,6 +101,20 @@
     box-shadow: 0 20px 44px -28px rgba(36,25,52,0.35);
   }
 
+  .grouptoggle{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:18px;}
+  .gtab{
+    padding:11px 16px;border-radius:999px;border:none;background:var(--bg-soft);
+    color:var(--ink-soft);font-family:'Manrope',sans-serif;font-weight:800;font-size:13px;
+    cursor:pointer;box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+    transition:transform .13s ease, box-shadow .13s ease, background .13s ease, color .13s ease;
+  }
+  .gtab:hover{ transform:translateY(-1px); }
+  .gtab.active{
+    background:linear-gradient(155deg,var(--c1-a),var(--c1-b));color:#fff;
+    box-shadow:0 10px 20px -10px var(--c1-sh);
+  }
+  .gtab.pressed{ transform:scale(0.96); }
+
   .section-title{font-family:'Manrope',sans-serif;font-weight:800;font-size:20px;letter-spacing:-0.005em;margin:0 0 8px;}
   .section-intro{color:var(--ink-soft);font-size:14.5px;line-height:1.6;margin:0 0 18px;}
   .section-intro b{color:var(--ink);}
@@ -389,13 +403,32 @@ const TOPICS = {
         ]
       },
       {
-        id: "r3", tab: "Види", dot: "3", type: "cards",
+        id: "r3", tab: "Види", dot: "3", type: "cards-grouped",
         title: "Види складних речень",
-        intro: "Залежно від того, чим і як поєднано частини, складні речення бувають сполучникові (складносурядні, складнопідрядні) та безсполучникові.",
-        cards: [
-          {rule: "Складносурядне", desc: "частини рівноправні; сурядні сполучники (і, а, але, та, або)", examples: [ex("Сонце сховалося за хмару, але дощ не пішов.")]},
-          {rule: "Складнопідрядне", desc: "одна частина залежить від іншої; підрядні сполучники й сполучні слова", examples: [ex("Ми вийшли з дому, коли розвиднілося.")]},
-          {rule: "Безсполучникове", desc: "частини поєднані лише інтонацією та змістом", examples: [ex("Сонце зайшло, стало темно.")]}
+        intro: "За способом поєднання частин складні речення поділяються на <b>сполучникові</b>, <b>безсполучникові</b> та речення <b>з різними видами зв'язку</b>. Обери групу нижче.",
+        groups: [
+          {
+            key: "spoluch", label: "Сполучникове",
+            cards: [
+              {rule: "Складносурядне", desc: "частини рівноправні; сурядні сполучники (і, а, але, та, або)", examples: [ex("Сонце сховалося за хмару, але дощ не пішов.")]},
+              {rule: "Складнопідрядне", desc: "одна частина залежить від іншої; підрядні сполучники й сполучні слова", examples: [ex("Ми вийшли з дому, коли розвиднілося.")]}
+            ]
+          },
+          {
+            key: "bezspoluch", label: "Безсполучникове",
+            cards: [
+              {rule: "З однорідними частинами", desc: "частини рівноправні, як у складносурядному; можна поміняти місцями або вставити сполучник і, а", examples: [ex("Сонце зайшло, стало темно.")]},
+              {rule: "З неоднорідними частинами", desc: "частини залежні одна від одної за змістом, як у складнопідрядному; місцями не поміняєш", examples: [ex("Я зрозумів одне: без праці нічого не досягнеш.")]}
+            ]
+          },
+          {
+            key: "rizni", label: "З різними видами зв'язку",
+            cards: [
+              {rule: "Сурядне + підрядне", desc: "поєднує сурядний і підрядний зв'язок одночасно", examples: [ex("Сонце зайшло, і стало темно, коли ми поверталися додому.")]},
+              {rule: "Сурядне + безсполучникове", desc: "поєднує сурядний і безсполучниковий зв'язок", examples: [ex("Сонце зайшло, стало темно, і на небі засяяли перші зорі.")]},
+              {rule: "Підрядне + безсполучникове", desc: "поєднує підрядний і безсполучниковий зв'язок", examples: [ex("Я зрозумів: якщо не поспішити, ми запізнимося.")]}
+            ]
+          }
         ]
       },
       {
@@ -430,13 +463,14 @@ let activeTopic = "rule";
 let activeSub = 0;
 let quizIdx = 0;
 let quizAnswers = {};
+let activeGroup = 0;
 
 const topictoggle = document.getElementById('topictoggle');
 const subtabbar = document.getElementById('subtabbar');
 const lessonArea = document.getElementById('lessonArea');
 
-function resetNav(){ activeSub = 0; quizIdx = 0; quizAnswers = {}; }
-function resetQuiz(){ quizIdx = 0; quizAnswers = {}; }
+function resetNav(){ activeSub = 0; quizIdx = 0; quizAnswers = {}; activeGroup = 0; }
+function resetQuiz(){ quizIdx = 0; quizAnswers = {}; activeGroup = 0; }
 function currentSub(){ return TOPICS[activeTopic].subs[activeSub]; }
 function currentSection(){ return currentSub(); }
 
@@ -445,6 +479,7 @@ function sectionKey(){
   const sec = currentSection();
   let k = activeTopic + '__' + activeSub;
   if(sec.type === "quiz") k += '__q' + quizIdx;
+  if(sec.type === "cards-grouped") k += '__g' + activeGroup;
   return k;
 }
 function saveCurrentDrawing(){ if(window.getDrawingSnapshot) drawStore[sectionKey()] = window.getDrawingSnapshot(); }
@@ -504,6 +539,41 @@ function renderContent(){
         </div>
       </div>`).join('')}</div>`;
     lessonArea.innerHTML = html;
+    lessonArea.querySelectorAll('[data-kind="card"]').forEach(el=>{
+      const toggle = ()=>{ el.classList.toggle('open'); };
+      attachTapToggle(el, toggle);
+    });
+    syncCanvasAfterRender();
+    return;
+  }
+
+  if(s.type === "cards-grouped"){
+    html += `<div class="grouptoggle">${s.groups.map((g,i)=>`
+      <button class="gtab ${i===activeGroup?'active':''}" data-i="${i}">${g.label}</button>
+    `).join('')}</div>`;
+    const activeGrp = s.groups[activeGroup];
+    html += `<div class="cardgrid">${activeGrp.cards.map((c,idx)=>`
+      <div class="flip" data-kind="card" data-card-key="${secKey}__card${idx}">
+        <div class="flip-inner">
+          <div class="flip-face flip-front">
+            <div class="flip-rule">${c.rule}</div>
+            <div class="flip-desc">${c.desc||''}</div>
+            <div class="flip-hint">натисни →</div>
+          </div>
+          <div class="flip-face flip-back">
+            ${c.examples.map(e=>`<div class="flip-example">${e.word}</div>`).join('')}
+          </div>
+        </div>
+      </div>`).join('')}</div>`;
+    lessonArea.innerHTML = html;
+    lessonArea.querySelectorAll('.gtab').forEach(btn=>{
+      const nav = ()=>{
+        saveCurrentDrawing();
+        activeGroup = +btn.dataset.i;
+        renderContent();
+      };
+      attachTapToggle(btn, nav);
+    });
     lessonArea.querySelectorAll('[data-kind="card"]').forEach(el=>{
       const toggle = ()=>{ el.classList.toggle('open'); };
       attachTapToggle(el, toggle);
