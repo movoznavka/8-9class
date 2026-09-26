@@ -373,6 +373,7 @@ const TOPICS = {
     subs: [
       {
         id: "e109", tab: "Завдання 1", dot: "1", type: "quiz", mode: "options",
+        testName: "Словосполучення (завдання)",
         title: "Завдання 1",
         intro: "Визначте, чи є поєднання словосполученням. Якщо є — оберіть тип зв'язку, якщо ні — оберіть причину.",
         opts: ["узгодження","керування","прилягання","не є: фразеологізм","не є: прийменник із іменником","не є: підмет і присудок","не є: складна форма слова"],
@@ -386,6 +387,7 @@ const TOPICS = {
       },
       {
         id: "e110", tab: "Завдання 2", dot: "2", type: "quiz", mode: "write",
+        testName: "Словосполучення (завдання)",
         title: "Завдання 2",
         intro: "Розкладіть складне словосполучення на два прості. Кожне просте словосполучення пишіть в окремому полі.",
         questions: [
@@ -401,6 +403,7 @@ const TOPICS = {
       },
       {
         id: "e146", tab: "Завдання 3", dot: "3", type: "quiz", mode: "options",
+        testName: "Словосполучення (завдання)",
         title: "Завдання 3",
         intro: "Визначте, які словосполучення з речень прості, а які складні.",
         opts: ["просте","складне"],
@@ -413,6 +416,7 @@ const TOPICS = {
       },
       {
         id: "e151", tab: "Завдання 4", dot: "4", type: "quiz", mode: "options",
+        testName: "Словосполучення (завдання)",
         title: "Завдання 4",
         intro: "Визначте, яким за головним словом є кожне словосполучення.",
         opts: ["іменникове","займенникове","дієслівне","прислівникове"],
@@ -427,6 +431,27 @@ const TOPICS = {
     ]
   }
 };
+
+/* /exec-посилання Apps Script проєкту бота @resultat89_bot (те саме, що HOMEWORK_API_URL в index89.html) */
+const API_URL = "https://script.google.com/macros/s/AKfycbxWkeJYw7gUdEjM9H2oeMVTMhBLEq1dDa2DcqNS5vSQjJb19aXyR7p7kDz_otyK3sTggw/exec";
+let _resultSent = false;
+
+function sendResultOnce_(s){
+  if(_resultSent) return;
+  _resultSent = true;
+  const student = new URLSearchParams(location.search).get('student');
+  if(!student || !API_URL || API_URL.indexOf('ВСТАВТЕ') === 0) return;
+  const {correct, answered, total} = quizScore(s.questions);
+  const wrongList = [];
+  s.questions.forEach((_,i)=>{ const r = quizAnswers[i]; if(r && !r.correct) wrongList.push(i+1); });
+  try{
+    fetch(API_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({type:'quiz_result', student, testName: s.testName || s.title, correct, answered, total, wrongList, reviewLink:'', flaggedList:[]})
+    }).catch(()=>{});
+  }catch(e){}
+}
 
 const LETTERS = ["А","Б","В","Г","Д","Е","Є"];
 const TOPIC_ORDER = ["exercises"];
@@ -452,7 +477,7 @@ const subtabbar = document.getElementById('subtabbar');
 const lessonArea = document.getElementById('lessonArea');
 
 function resetNav(){ activeSub = 0; quizIdx = 0; quizAnswers = {}; }
-function resetQuiz(){ quizIdx = 0; quizAnswers = {}; }
+function resetQuiz(){ quizIdx = 0; quizAnswers = {}; _resultSent = false; }
 function currentSub(){ return TOPICS[activeTopic].subs[activeSub]; }
 function currentSection(){ return currentSub(); }
 
@@ -565,6 +590,7 @@ function renderQuiz(s){
   const total = s.questions.length;
 
   if(quizIdx >= total){
+    sendResultOnce_(s);
     const {correct} = quizScore(s.questions);
     const extra = document.createElement('div');
     extra.innerHTML = `
