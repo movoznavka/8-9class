@@ -461,15 +461,22 @@ let activeSub = 0;
 let quizIdx = 0;
 let quizAnswers = {};
 
-// Якщо в посиланні є ?hw=N (номер ДЗ, вибраний у боті), одразу відкриваємо
-// саме те "Завдання N" (шукаємо серед subs за полем "dot", що дорівнює N),
-// а не показуємо перше завдання за замовчуванням.
+// Якщо в посиланні є ?hw=N (номер ДЗ, вибраний у боті):
+// 1) спершу шукаємо вкладку "Завдання N" (поле "dot", що дорівнює N);
+// 2) якщо такої вкладки нема, трактуємо N як номер ПИТАННЯ всередині
+//    поточної (першої) вкладки і одразу відкриваємо саме його.
 (function applyHomeworkParam_(){
   const hwParam = new URLSearchParams(location.search).get('hw');
   if(!hwParam) return;
   const subs = TOPICS[activeTopic].subs;
   const idx = subs.findIndex(function(s){ return s.dot === hwParam; });
-  if(idx !== -1) activeSub = idx;
+  if(idx !== -1){ activeSub = idx; return; }
+
+  const qNum = parseInt(hwParam, 10);
+  const questions = (subs[activeSub] && subs[activeSub].questions) || [];
+  if(!isNaN(qNum) && qNum >= 1 && qNum <= questions.length){
+    quizIdx = qNum - 1;
+  }
 })();
 
 const topictoggle = document.getElementById('topictoggle');
