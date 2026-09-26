@@ -436,6 +436,17 @@ let activeSub = 0;
 let quizIdx = 0;
 let quizAnswers = {};
 
+// Якщо в посиланні є ?hw=N (номер ДЗ, вибраний у боті), одразу відкриваємо
+// саме те "Завдання N" (шукаємо серед subs за полем "dot", що дорівнює N),
+// а не показуємо перше завдання за замовчуванням.
+(function applyHomeworkParam_(){
+  const hwParam = new URLSearchParams(location.search).get('hw');
+  if(!hwParam) return;
+  const subs = TOPICS[activeTopic].subs;
+  const idx = subs.findIndex(function(s){ return s.dot === hwParam; });
+  if(idx !== -1) activeSub = idx;
+})();
+
 const topictoggle = document.getElementById('topictoggle');
 const subtabbar = document.getElementById('subtabbar');
 const lessonArea = document.getElementById('lessonArea');
