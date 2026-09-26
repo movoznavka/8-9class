@@ -481,21 +481,32 @@ let activeSub = 0;
 let quizIdx = 0;
 let quizAnswers = {};
 
-// Якщо в посиланні є ?hw=N (номер ДЗ, вибраний у боті):
-// 1) спершу шукаємо вкладку "Завдання N" (поле "dot", що дорівнює N).
-//    Якщо знайдено — залишаємо ЛИШЕ цю вкладку (інші ховаємо повністю,
-//    учень не побачить і не зможе відкрити чужі завдання), і саме її
-//    результат піде вчителю в Телеграм.
-// 2) якщо такої вкладки нема, трактуємо N як номер ПИТАННЯ всередині
-//    поточної (першої) вкладки і одразу відкриваємо саме його.
+// Якщо в посиланні є ?hw=N (номер ДЗ, вибраний у боті), підтримуються
+// три формати:
+//   "N"   — лише вкладка "Завдання N" з початку (інші ховаємо повністю);
+//   "N.M" — лише вкладка "Завдання N" (інші сховані), одразу з питання M;
+//   якщо жодної вкладки з номером N нема — трактуємо N як номер ПИТАННЯ
+//   всередині поточної (першої) вкладки.
 (function applyHomeworkParam_(){
   const hwParam = new URLSearchParams(location.search).get('hw');
   if(!hwParam) return;
   const subs = TOPICS[activeTopic].subs;
-  const idx = subs.findIndex(function(s){ return s.dot === hwParam; });
+
+  const parts = hwParam.split('.');
+  const exPart = parts[0];
+  const qPart = parts.length > 1 ? parts[1] : null;
+
+  const idx = subs.findIndex(function(s){ return s.dot === exPart; });
   if(idx !== -1){
     TOPICS[activeTopic].subs = [subs[idx]];
     activeSub = 0;
+    if(qPart !== null){
+      const qNum = parseInt(qPart, 10);
+      const questions = subs[idx].questions || [];
+      if(!isNaN(qNum) && qNum >= 1 && qNum <= questions.length){
+        quizIdx = qNum - 1;
+      }
+    }
     return;
   }
 
