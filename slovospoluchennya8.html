@@ -208,6 +208,10 @@
     display:flex;align-items:center;justify-content:center;position:relative;
   }
   .done-screen .big{font-family:'Manrope',sans-serif;font-weight:800;font-size:28px;color:#fff;}
+  .done-screen .send-status{font-size:13px;font-weight:600;color:var(--ink-soft);margin-top:10px;min-height:18px;}
+  .done-screen .send-status.ok{color:var(--correct-ink);}
+  .done-screen .send-status.bad{color:var(--c2-b);}
+  .btn.ghost.small{padding:8px 14px;font-size:12px;}
 
   footer{text-align:center;margin-top:22px;font-size:12.5px;color:var(--ink-soft);font-weight:500;}
 
@@ -552,23 +556,39 @@ const TOPICS = {
 };
 /* /exec-посилання Apps Script проєкту бота @resultat89_bot (те саме, що HOMEWORK_API_URL в index89.html) */
 const API_URL = "https://script.google.com/macros/s/AKfycbxWkeJYw7gUdEjM9H2oeMVTMhBLEq1dDa2DcqNS5vSQjJb19aXyR7p7kDz_otyK3sTggw/exec";
-let _resultSent = false;
+let _resultState = 'idle'; // idle | sending | sent | failed
 
-function sendResultOnce_(s){
-  if(_resultSent) return;
-  _resultSent = true;
+async function sendResultOnce_(s){
+  if(_resultState === 'sending' || _resultState === 'sent') return;
   const student = new URLSearchParams(location.search).get('student');
-  if(!student || !API_URL || API_URL.indexOf('ВСТАВТЕ') === 0) return;
+  const statusEl = document.getElementById('sendStatus');
+  if(!student || !API_URL || API_URL.indexOf('ВСТАВТЕ') === 0){
+    if(statusEl) statusEl.textContent = '';
+    return;
+  }
+  _resultState = 'sending';
+  if(statusEl){ statusEl.textContent = 'Надсилаємо результат...'; statusEl.className = 'send-status'; }
   const {correct, answered, total} = quizScore(s.questions);
   const wrongList = [];
   s.questions.forEach((_,i)=>{ const r = quizAnswers[i]; if(r && !r.correct) wrongList.push(i+1); });
   try{
-    fetch(API_URL, {
-      method: 'POST', mode: 'no-cors',
+    const resp = await fetch(API_URL, {
+      method: 'POST',
       headers: {'Content-Type': 'text/plain;charset=utf-8'},
       body: JSON.stringify({type:'quiz_result', student, testName: s.testName, correct, answered, total, wrongList, reviewLink:'', flaggedList:[]})
-    }).catch(()=>{});
-  }catch(e){}
+    });
+    if(!resp || !resp.ok) throw new Error('bad status');
+    _resultState = 'sent';
+    if(statusEl){ statusEl.textContent = 'Результат надіслано вчителю ✓'; statusEl.className = 'send-status ok'; }
+  }catch(e){
+    _resultState = 'failed';
+    if(statusEl){
+      statusEl.innerHTML = 'Не вдалося надіслати результат (перевірте інтернет). <button class="btn ghost small" id="retrySendBtn">Спробувати ще раз</button>';
+      statusEl.className = 'send-status bad';
+      const retryBtn = document.getElementById('retrySendBtn');
+      if(retryBtn) retryBtn.onclick = ()=>{ _resultState = 'idle'; sendResultOnce_(s); };
+    }
+  }
 }
 
 const LETTERS = ["А","Б","В","Г","Д","Е","Є"];
@@ -603,7 +623,7 @@ const subtabbar = document.getElementById('subtabbar');
 const lessonArea = document.getElementById('lessonArea');
 
 function resetNav(){ activeSub = 0; quizIdx = 0; quizAnswers = {}; }
-function resetQuiz(){ quizIdx = 0; quizAnswers = {}; _resultSent = false; }
+function resetQuiz(){ quizIdx = 0; quizAnswers = {}; _resultState = 'idle'; }
 function currentSub(){ return TOPICS[activeTopic].subs[activeSub]; }
 function currentSection(){ return currentSub(); }
 
@@ -717,17 +737,18 @@ function renderQuiz(s){
   const total = s.questions.length;
 
   if(quizIdx >= total){
-    sendResultOnce_(s);
     const {correct} = quizScore(s.questions);
     const extra = document.createElement('div');
     extra.innerHTML = `
       <div class="done-screen">
         <div class="ring"><div class="big">${correct}/${total}</div></div>
         <p class="section-intro" style="margin-top:10px;">${correct===total ? 'Ідеально! Матеріал засвоєно 🎉' : 'Непогано — можна пройти ще раз.'}</p>
+        <div class="send-status" id="sendStatus"></div>
         <button class="btn primary" id="quizRestart" style="margin-top:6px;">Пройти ще раз</button>
       </div>`;
     lessonArea.appendChild(extra);
     attachTapToggle(document.getElementById('quizRestart'), ()=>{ resetQuiz(); renderContent(); });
+    sendResultOnce_(s);
     return;
   }
 
