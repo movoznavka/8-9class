@@ -482,7 +482,10 @@ let quizIdx = 0;
 let quizAnswers = {};
 
 // Якщо в посиланні є ?hw=N (номер ДЗ, вибраний у боті):
-// 1) спершу шукаємо вкладку "Завдання N" (поле "dot", що дорівнює N);
+// 1) спершу шукаємо вкладку "Завдання N" (поле "dot", що дорівнює N).
+//    Якщо знайдено — залишаємо ЛИШЕ цю вкладку (інші ховаємо повністю,
+//    учень не побачить і не зможе відкрити чужі завдання), і саме її
+//    результат піде вчителю в Телеграм.
 // 2) якщо такої вкладки нема, трактуємо N як номер ПИТАННЯ всередині
 //    поточної (першої) вкладки і одразу відкриваємо саме його.
 (function applyHomeworkParam_(){
@@ -490,7 +493,11 @@ let quizAnswers = {};
   if(!hwParam) return;
   const subs = TOPICS[activeTopic].subs;
   const idx = subs.findIndex(function(s){ return s.dot === hwParam; });
-  if(idx !== -1){ activeSub = idx; return; }
+  if(idx !== -1){
+    TOPICS[activeTopic].subs = [subs[idx]];
+    activeSub = 0;
+    return;
+  }
 
   const qNum = parseInt(hwParam, 10);
   const questions = (subs[activeSub] && subs[activeSub].questions) || [];
